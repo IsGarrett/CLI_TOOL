@@ -57,6 +57,47 @@ def copyFile(fileName):
     shutil.copyfile(fileName, newFile)
 
 def printUI():
+
+    parser = argparse.ArgumentParser(
+            description= "Automation Dashboard CLI"
+        )
+    subparsers = parser.add_subparsers(dest = "command", help = "Available commands")
+
+    #organizing
+    parserOrganize = subparsers.add_parser("organize", help = "Organize files by type")
+    parserOrganize.add_argument("--path", required=True, help= "Path to folder")
+
+    #rename
+    parserRename = subparsers.add_parser("rename", help="Batch rename files")
+    parserRename.add_argument("--path", required =True, help = "Path to folder")
+    parserRename.add_argument("--prefix", required=True, help ="Prefix for file names")
+
+    #compress 
+    parserCompress = subparsers.add_parser("compress", help = "compress files")
+    parserCompress.add_argument("--path", required = True, help = "compress files")
+
+        #copyfile
+    parserCompress = subparsers.add_parser("copy", help = "copy a file")
+    parserCompress.add_argument("--fileName", required= True, help = "copy a file")
+
+    parserCompress = subparsers.add_parser("exit", help = "exit console")
+    parserCompress.add_argument("--exit", required = False, help = "Exit console")
+
+    
+    args = parser.parse_args()
+
+    if args.command == "organize":
+        organizeFiles(args.path)
+    elif args.command == "compress":
+        compressFiles(args.path)
+    elif args.command == "rename":
+        renameFiles(args.path, args.prefix)
+    elif args.command == "copy":
+        copyFile(args.fileName)
+    elif args.command == "exit":
+        exitCode = True
+    else:
+        parser.print_help()
     
 
 
@@ -65,46 +106,14 @@ def printUI():
 
 
 def main():
-   
-        parser = argparse.ArgumentParser(
-            description= "Automation Dashboard CLI"
-        )
-        subparsers = parser.add_subparsers(dest = "command", help = "Available commands")
-
-        #organizing
-        parserOrganize = subparsers.add_parser("organize", help = "Organize files by type")
-        parserOrganize.add_argument("--path", required=True, help= "Path to folder")
-
-        #rename
-        parserRename = subparsers.add_parser("rename", help="Batch rename files")
-        parserRename.add_argument("--path", required =True, help = "Path to folder")
-        parserRename.add_argument("--prefix", required=True, help ="Prefix for file names")
-
-        #compress 
-        parserCompress = subparsers.add_parser("compress", help = "compress files")
-        parserCompress.add_argument("--path", required = True, help = "compress files")
-
-        #copyfile
-        parserCompress = subparsers.add_parser("copy", help = "copy a file")
-        parserCompress.add_argument("--fileName", required= True, help = "copy a file")
-
     
-        args = parser.parse_args()
+  
+    printUI()
+
 
         
 
-        if args.command == "organize":
-            organizeFiles(args.path)
-        elif args.command == "compress":
-            compressFiles(args.path)
-        elif args.command == "rename":
-            renameFiles(args.path, args.prefix)
-        elif args.command == "copy":
-            copyFile(args.fileName)
-        elif args.command == "exit":
-            exitCode = True
-        else:
-            parser.print_help()
+        
     
 if __name__ == "__main__":
     main()
