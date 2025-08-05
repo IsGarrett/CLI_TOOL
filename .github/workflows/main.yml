@@ -1,4 +1,4 @@
-name: Deploy via SSH
+name: Deploy to VM via SSH
 
 on:
   push:
@@ -9,6 +9,12 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
+    env:
+      DEPLOY_USER: parallels
+      DEPLOY_HOST: 10.211.55.6      # <-- Replace with your VM's public IP or DNS
+      DEPLOY_PORT: 2222
+      DEPLOY_PATH: ~/CLI_TOOL               # <-- Remote path to deploy to
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -18,8 +24,9 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -p 2222 -H 127.0.0.1 >> ~/.ssh/known_hosts
-      - name: Deploy to VM
+          ssh-keyscan -p $DEPLOY_PORT -H $DEPLOY_HOST >> ~/.ssh/known_hosts
+
+      - name: Deploy code to VM
         run: |
-          ssh -p 2222 parallels@127.0.0.1 "mkdir -p ~/app"
-          scp -P 2222 -r . parallels@127.0.0.1:~/app/
+          ssh -p $DEPLOY_PORT $DEPLOY_USER@$DEPLOY_HOST "mkdir -p $DEPLOY_PATH"
+          scp -P $DEPLOY_PORT -r . $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/
