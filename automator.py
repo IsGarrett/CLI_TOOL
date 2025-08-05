@@ -3,12 +3,41 @@ import os
 from pathlib import Path
 import shutil
 import zipfile
+import smtplib
+from email.message import EmailMessage
+from dotenv import load_dotenv
+
+load_dotenv()
+user = os.getenv("user")
+password = os.getenv("password")
+
+
+
+
+def sendingEmail(textFile, sender, recipient):
+    print("testing if github actions works")
+
+    with open(textFile) as fp:
+        msg = EmailMessage()
+        msg.set_content(fp.read())
+
+    msg["Subject"] = f"The contents of the {textFile}"
+    msg["From"] = sender
+    msg["To"] = recipient
+
+    s = smtplib.SMTP("smtp.gmail.com", 587)
+    s.starttls()
+    s.login(user, password)
+    s.send_message(msg)
+    s.quit()
+
 
 
 
 def organizeFiles(path):
     if not os.path.isdir(path):
         print(f"The path: {path} is not a valid directory")
+        print("test")
         return
 
     for filename in os.listdir(path):
@@ -81,7 +110,12 @@ def printUI():
     parserCompress.add_argument("--fileName", required= True, help = "copy a file")
 
     parserCompress = subparsers.add_parser("exit", help = "exit console")
-    parserCompress.add_argument("--exit", required = False, help = "Exit console")
+    
+
+    parserCompress = subparsers.add_parser("email", help = "send email")
+    parserCompress.add_argument("--fileName", required=True)
+    parserCompress.add_argument("--fromEmail", required=True)
+    parserCompress.add_argument("--toEmail", required=True)
 
     
     args = parser.parse_args()
@@ -94,6 +128,8 @@ def printUI():
         renameFiles(args.path, args.prefix)
     elif args.command == "copy":
         copyFile(args.fileName)
+    elif args.command == "email":
+            sendingEmail(args.fileName, args.fromEmail, args.toEmail)
     elif args.command == "exit":
         exitCode = True
     else:
