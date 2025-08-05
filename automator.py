@@ -15,7 +15,7 @@ password = os.getenv("password")
 
 
 def sendingEmail(textFile, sender, recipient):
-    print("testing if github actions works!!")
+    print("testing if github actions works!!!")
 
     with open(textFile) as fp:
         msg = EmailMessage()
